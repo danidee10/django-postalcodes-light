@@ -44,6 +44,7 @@ class Command(BaseCommand):
                 if row['postal_code'] is None:  # must be a bogus row
                     continue
                 postal_code, created = PostalCode.objects.get_or_create(
+                    country_code=row.pop('country_code'),
                     postal_code=row.pop('postal_code'),
                     defaults=row,
                 )
