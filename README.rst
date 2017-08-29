@@ -6,21 +6,13 @@ A simple data model for storing postal codes with placenames and location.
 Installing
 ----------
 
-You can clone the repository and install from source::
+The recommended installing method is with `pip`::
+
+    pip install django-postalcodes-light
+
+You can also clone the repository and install from source::
 
     python setup.py install
-
-or use `pip` to install from PyPI::
-
-    pip install django-postalcodes
-
-.. note::
-    Version 0.2+ requires a GIS backend (e.g. PostGIS). Migrating from 0.1 will
-    not be straightforward if you have existing data decimal data or do not
-    have a GIS backend.
-
-If you are using South you must use South >= 1.0 to ensure compatability with
-the new `south_migrations` migrations module name.
 
 Getting data
 ------------
@@ -28,19 +20,16 @@ Getting data
 Postal code data is available from a number of sources, typically on a country
 by country basis. The United States Census Bureau maintains the `Gazetteer
 database <http://www.census.gov/geo/www/gazetteer/gazette.html>`_, including
-detailed zip code data. The `GeoNames geographical database
-<http://www.geonames.org/export/>`_ also provides postal code data for
-international postal codes (and other places).
+detailed postal code data. The `GeoNames geographical database
+<http://download.geonames.org/export/zip/>`_ also provides postal code data
+for international postal codes (and other places).
 
-The following data file can be used to prepopulate a PostGIS database with US
-postalcodes complete with location.
+This project uses the column names specified by GeoNames and includes a
+management to import and update data from GeoNames::
 
-* `US zip codes using state abbreviations <https://dl.dropbox.com/u/6515401/postalcodes/postalcodes_gis_us.sql.zip>`_ (879 KB)
+    python manage.py import_postalcodes US
 
-These files pertain to the 0.1 release but may still be useful. They are based
-on location via decimal fields, rather than a GIS point field.
+Additional files can be imported by specifying each country code. Multiple
+country codes may be provided on one line, e.g.::
 
-* `International postal codes <http://dl.dropbox.com/u/6515401/postalcodes/postalcodes_international.sql.zip>`_ (9 MB)
-* `US zip codes using state abbreviations <http://dl.dropbox.com/u/6515401/postalcodes/postalcodes_us.sql.zip>`_ (623 KB)
-
-The data is licensed under the `Database Contents License <http://opendatacommons.org/licenses/dbcl/1.0/>`_.
+    python manage.py import_postalcodes FR IT
