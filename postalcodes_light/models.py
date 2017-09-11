@@ -22,6 +22,9 @@ class PostalCode(models.Model):
     class Meta:
         verbose_name = _("Postal code")
         verbose_name_plural = _("Postal codes")
+        unique_together = (
+            ('country_code', 'postal_code'),
+        )
 
     def __str__(self):
         return u"%s" % self.postal_code
