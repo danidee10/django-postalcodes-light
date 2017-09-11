@@ -35,19 +35,26 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         for country in options['country']:
             country = country.upper()
-            response = requests.get(self.base_url % country)
+            url = self.base_url % country
+            self.stdout.write('Downloading and extracting %s...' % url)
+            response = requests.get(url)
             zipdata = zipfile.ZipFile(io.BytesIO(response.content))
             tmpdir = tempfile.TemporaryDirectory()
             tmpfile = zipdata.extract('%s.txt' % country, path=tmpdir.name)
+            self.stdout.write('Reading and updating postal codes...')
+            seen_postal_codes = []
             for row in csv.DictReader(open(tmpfile), fieldnames=self.fieldnames, delimiter=self.delimiter):
                 row.pop(None)  # remove extra fields (latitude, longitude, accuracy)
-                if row['postal_code'] is None:  # must be a bogus row
+                if row['postal_code'] is None or row['postal_code'] in seen_postal_codes:
+                    self.stdout.write('Skipping null or already-seen postal code "%s"' % row)
                     continue
+                seen_postal_codes.append(row['postal_code'])
                 postal_code, created = PostalCode.objects.get_or_create(
                     country_code=row.pop('country_code'),
                     postal_code=row.pop('postal_code'),
                     defaults=row,
                 )
                 if not created and any([getattr(postal_code, k) != v for k, v in row.items()]):
+                    self.stdout.write('Postal code "%s" is out of date; updating.' % postal_code)
                     PostalCode.objects.filter(pk=postal_code.pk).update(**row)
             self.stdout.write(self.style.SUCCESS('Successfully updated postal codes for %s' % country))
