@@ -3,6 +3,9 @@ Django Postal Codes
 
 A simple data model for storing postal codes with placenames and location.
 
+.. image:: https://badge.fury.io/py/django-postalcodes-light.svg
+    :target: https://badge.fury.io/py/django-postalcodes-light
+
 Installing
 ----------
 
