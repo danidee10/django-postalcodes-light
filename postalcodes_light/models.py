@@ -23,5 +23,5 @@ class PostalCode(models.Model):
         verbose_name = _("Postal code")
         verbose_name_plural = _("Postal codes")
 
-    def __unicode__(self):
-        return u"%s" % self.code
+    def __str__(self):
+        return u"%s" % self.postal_code
