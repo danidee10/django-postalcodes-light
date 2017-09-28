@@ -59,4 +59,4 @@ class Command(BaseCommand):
                     self.stdout.write('Postal code "%s" is out of date; updating.' % postal_code)
                     PostalCode.objects.filter(pk=postal_code.pk).update(**row)
             shutil.rmtree(tmpdir)
-            self.stdout.write(self.style.SUCCESS('Successfully updated postal codes for %s' % country))
+            self.stdout.write('Successfully updated postal codes for %s' % country)
