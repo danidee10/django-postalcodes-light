@@ -1,5 +1,6 @@
 import csv
 import io
+import shutil
 import tempfile
 import zipfile
 
@@ -39,8 +40,8 @@ class Command(BaseCommand):
             self.stdout.write('Downloading and extracting %s...' % url)
             response = requests.get(url)
             zipdata = zipfile.ZipFile(io.BytesIO(response.content))
-            tmpdir = tempfile.TemporaryDirectory()
-            tmpfile = zipdata.extract('%s.txt' % country, path=tmpdir.name)
+            tmpdir = tempfile.mkdtemp()
+            tmpfile = zipdata.extract('%s.txt' % country, path=tmpdir)
             self.stdout.write('Reading and updating postal codes...')
             seen_postal_codes = []
             for row in csv.DictReader(open(tmpfile), fieldnames=self.fieldnames, delimiter=self.delimiter):
@@ -57,4 +58,5 @@ class Command(BaseCommand):
                 if not created and any([getattr(postal_code, k) != v for k, v in row.items()]):
                     self.stdout.write('Postal code "%s" is out of date; updating.' % postal_code)
                     PostalCode.objects.filter(pk=postal_code.pk).update(**row)
+            shutil.rmtree(tmpdir)
             self.stdout.write(self.style.SUCCESS('Successfully updated postal codes for %s' % country))
