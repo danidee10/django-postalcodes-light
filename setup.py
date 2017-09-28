@@ -26,6 +26,7 @@ setup(
     ],
     install_requires=[
         'Django>=1.8',
+        'requests',
     ],
     include_package_data=True,
     packages=find_packages(),
